@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Secure Web</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="box">
+
+<h1>Secure Message Web</h1>
+
+<form method="POST" enctype="multipart/form-data">
+
+<input type="file" name="image" required>
+
+<textarea name="message" placeholder="Secret Message"></textarea>
+
+<input type="text" name="key" placeholder="Key" required>
+
+<button name="mode" value="encode">Encode</button>
+<button name="mode" value="decode">Decode</button>
+
+</form>
+
+<h3>{{result}}</h3>
+
+</div>
+
+</body>
+</html>
