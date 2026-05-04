@@ -16,7 +16,7 @@ def home():
         key = request.form['key']
 
         file = request.files['image']
-        path = 'uploads/input.png'
+        path = 'uploads/input.png' 
         file.save(path)
 
         if mode == 'encode':
