@@ -23,21 +23,32 @@ def home():
 
             msg = request.form['message']
 
-            cipher = encrypt_message(msg,key)
+            # Encrypt 
+            cipher = encrypt_message(msg, key)
 
-            embed(path,cipher)
+            # Embed ke gambar
+            embed(path, cipher)
 
-            psnr, ssim = evaluate(path,'uploads/stego.png')
+            # Evaluasi 
+            psnr, ssim = evaluate(path, 'uploads/stego.png')
 
             result = f'Encode Success | PSNR={psnr:.2f} | SSIM={ssim:.4f}'
 
         else:
 
+            # Extract dari gambar
             cipher = extract(path)
-            plain = decrypt_message(cipher,key)
 
-            result = f'Hidden Message : {plain}'
+            # Kalau gambar tidak valid
+            if "FOTO TIDAK ORIGINAL" in cipher:
+                result = cipher
 
-    return render_template('index.html',result=result)
+            else:
+                # Decrypt
+                plain = decrypt_message(cipher, key)
+                result = f'Hidden Message : {plain}'
 
-app.run(debug=True)
+    return render_template('index.html', result=result)
+
+if __name__ == '__main__':
+    app.run(debug=True)
