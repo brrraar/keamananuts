@@ -1,96 +1,971 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Secure Message Web</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CryptoStego — Hybrid Kriptografi & Steganografi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #0a0a0f;
+      --surface:  #111118;
+      --border:   #1e1e2e;
+      --accent:   #00e5ff;
+      --accent2:  #ff6b6b;
+      --accent3:  #39ff14;
+      --text:     #e8e8f0;
+      --muted:    #4a4a6a;
+      --card:     #13131f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(0,229,255,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .logo-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--accent);
+      border: 1px solid rgba(0,229,255,0.3);
+      border-radius: 4px;
+      padding: 3px 8px;
+      letter-spacing: 0.12em;
+      background: rgba(0,229,255,0.06);
+    }
+
+    header h1 {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #e8e8f0 30%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      margin-top: 0.75rem;
+      font-size: 14px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 8px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 9px;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .tab-btn.active {
+      background: var(--card);
+      color: var(--accent);
+      border: 1px solid rgba(0,229,255,0.2);
+    }
+
+    /* ── Panel ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Stepper ── */
+    .stepper {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .step-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .step-item.done:not(:last-child)::after {
+      background: var(--accent);
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      color: var(--muted);
+      transition: all 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-item.active .step-num {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(0,229,255,0.08);
+      box-shadow: 0 0 16px rgba(0,229,255,0.2);
+    }
+
+    .step-item.done .step-num {
+      border-color: var(--accent3);
+      background: rgba(57,255,20,0.1);
+      color: var(--accent3);
+    }
+
+    .step-label {
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      letter-spacing: 0.06em;
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+    }
+
+    .step-item.active .step-label { color: var(--accent); }
+    .step-item.done .step-label { color: var(--accent3); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .card.highlight {
+      border-color: rgba(0,229,255,0.25);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1.25rem;
+    }
+
+    .step-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      padding: 3px 9px;
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+    }
+
+    .step-tag.s1 { color: var(--accent);  background: rgba(0,229,255,0.08);  border: 1px solid rgba(0,229,255,0.2); }
+    .step-tag.s2 { color: #b57bee;        background: rgba(181,123,238,0.08); border: 1px solid rgba(181,123,238,0.2); }
+    .step-tag.s3 { color: var(--accent2); background: rgba(255,107,107,0.08); border: 1px solid rgba(255,107,107,0.2); }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 1rem; }
+
+    .field label {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    textarea, input[type="text"], input[type="password"] {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      resize: none;
+    }
+
+    textarea { min-height: 90px; line-height: 1.6; }
+
+    textarea:focus, input[type="text"]:focus, input[type="password"]:focus {
+      border-color: rgba(0,229,255,0.35);
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.06);
+    }
+
+    textarea::placeholder, input::placeholder { color: var(--muted); }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(255,255,255,0.02);
+      position: relative;
+    }
+
+    .upload-zone:hover {
+      border-color: rgba(0,229,255,0.3);
+      background: rgba(0,229,255,0.03);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon {
+      width: 38px;
+      height: 38px;
+      margin: 0 auto 10px;
+      border-radius: 10px;
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.15);
+      display: grid;
+      place-items: center;
+    }
+
+    .upload-zone p {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .upload-zone span { color: var(--accent); }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.04em;
+      margin-top: 1rem;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-cyan {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-cyan:hover { background: #33ecff; }
+
+    .btn-purple {
+      background: #7c3aed;
+      color: #fff;
+    }
+    .btn-purple:hover { background: #8b4cf7; }
+
+    .btn-red {
+      background: var(--accent2);
+      color: #fff;
+    }
+    .btn-red:hover { background: #ff8585; }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── Result boxes ── */
+    .result-box {
+      display: none;
+      margin-top: 1rem;
+      border-radius: 12px;
+      padding: 1.25rem;
+      border: 1px solid;
+    }
+
+    .result-box.show { display: block; }
+
+    .result-box.success {
+      background: rgba(57,255,20,0.05);
+      border-color: rgba(57,255,20,0.2);
+    }
+
+    .result-box.error {
+      background: rgba(255,107,107,0.05);
+      border-color: rgba(255,107,107,0.2);
+    }
+
+    .result-box.info {
+      background: rgba(0,229,255,0.05);
+      border-color: rgba(0,229,255,0.2);
+    }
+
+    .result-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .result-box.success .result-label { color: var(--accent3); }
+    .result-box.error .result-label   { color: var(--accent2); }
+    .result-box.info .result-label    { color: var(--accent); }
+
+    .result-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      word-break: break-all;
+      color: var(--text);
+    }
+
+    /* Cipher display box */
+    .cipher-display {
+      display: none;
+      margin-top: 1rem;
+      background: rgba(0,229,255,0.04);
+      border: 1px solid rgba(0,229,255,0.18);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .cipher-display.show { display: block; }
+
+    .cipher-display .cipher-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .cipher-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: #90e0ef;
+      word-break: break-all;
+      line-height: 1.6;
+      max-height: 80px;
+      overflow-y: auto;
+    }
+
+    .cipher-text::-webkit-scrollbar { width: 4px; }
+    .cipher-text::-webkit-scrollbar-track { background: transparent; }
+    .cipher-text::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.2); border-radius: 2px; }
+
+    /* Arrow connector */
+    .arrow-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 1rem 0;
+      gap: 10px;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    .arrow-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* Metrics row */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+
+    .metric-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+    }
+
+    .metric-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    /* Download btn */
+    .btn-download {
+      display: none;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid rgba(57,255,20,0.3);
+      background: rgba(57,255,20,0.08);
+      color: var(--accent3);
+      border-radius: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: all 0.2s;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-download:hover {
+      background: rgba(57,255,20,0.14);
+    }
+
+    .btn-download.show { display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    /* Loading spinner */
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Decode result */
+    .decode-result {
+      display: none;
+      margin-top: 1rem;
+    }
+
+    .decode-result.show { display: block; }
+
+    .msg-revealed {
+      background: rgba(57,255,20,0.05);
+      border: 1px solid rgba(57,255,20,0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .msg-revealed .rev-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .msg-revealed .rev-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .msg-cipher {
+      background: rgba(0,229,255,0.04);
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-top: 10px;
+    }
+
+    .msg-cipher .cip-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .msg-cipher .cip-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: #90e0ef;
+      word-break: break-all;
+    }
+
+    .error-msg {
+      background: rgba(255,107,107,0.05);
+      border: 1px solid rgba(255,107,107,0.2);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .error-msg .err-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--accent2);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .error-msg .err-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--text);
+    }
+  </style>
 </head>
 <body>
- 
-  <div class="card">
-    <div class="header">
-      <div class="pill">
-        <div class="pill-dot"></div>
-        steganography
-      </div>
-      <h1>Secure Message Web</h1>
-      <p>Hide & extract messages inside images</p>
+
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="logo-row">
+      <div class="logo-badge">v2.0 // HYBRID</div>
     </div>
- 
-    <div class="sep"></div>
- 
-    <form method="POST" enctype="multipart/form-data">
- 
+    <h1>CryptoStego</h1>
+    <p>// enkripsi → sembunyikan → ekstrak</p>
+  </header>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('encode')">⟶ ENCODE</button>
+    <button class="tab-btn" onclick="switchTab('decode')">⟵ DECODE</button>
+  </div>
+
+  <!-- ══════════════ ENCODE PANEL ══════════════ -->
+  <div class="panel active" id="panel-encode">
+
+    <!-- Stepper -->
+    <div class="stepper" id="stepper">
+      <div class="step-item active" id="step1-item">
+        <div class="step-num">1</div>
+        <div class="step-label">Enkripsi</div>
+      </div>
+      <div class="step-item" id="step2-item">
+        <div class="step-num">2</div>
+        <div class="step-label">Embed</div>
+      </div>
+      <div class="step-item" id="step3-item">
+        <div class="step-num">3</div>
+        <div class="step-label">Selesai</div>
+      </div>
+    </div>
+
+    <!-- STEP 1: Enkripsi -->
+    <div class="card highlight" id="card-step1">
+      <div class="card-header">
+        <span class="step-tag s1">STEP 01</span>
+        <span class="card-title">Enkripsi Pesan</span>
+      </div>
+
       <div class="field">
-        <span class="field-label">Image</span>
-        <label class="upload" for="image-input">
-          <input type="file" id="image-input" name="image" accept="image/*" required>
+        <label>Pesan Rahasia</label>
+        <textarea id="enc-message" placeholder="Tulis pesan yang ingin disembunyikan..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Kunci Enkripsi (Passphrase)</label>
+        <input type="text" id="enc-key" placeholder="Masukkan kunci rahasia...">
+      </div>
+
+      <button class="btn btn-cyan" id="btn-encrypt" onclick="doEncrypt()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span id="enc-btn-text">ENKRIPSI PESAN</span>
+        <div class="spinner" id="enc-spinner" style="border-color:rgba(0,0,0,0.3);border-top-color:#000"></div>
+      </button>
+
+      <!-- Cipher result -->
+      <div class="cipher-display" id="cipher-display">
+        <div class="cipher-label">✓ CIPHERTEXT (ASCON)</div>
+        <div class="cipher-text" id="cipher-text-val"></div>
+      </div>
+    </div>
+
+    <div class="arrow-connector" id="arrow1">
+      <div class="arrow-line"></div>
+      <span>LANJUT KE STEP 2</span>
+      <div class="arrow-line"></div>
+    </div>
+
+    <!-- STEP 2: Embed -->
+    <div class="card" id="card-step2" style="opacity:0.4; pointer-events:none;">
+      <div class="card-header">
+        <span class="step-tag s2">STEP 02</span>
+        <span class="card-title">Sembunyikan ke Gambar</span>
+      </div>
+
+      <div class="field">
+        <label>Upload Gambar (PNG)</label>
+        <label class="upload-zone">
+          <input type="file" id="embed-image" accept="image/png,image/jpeg" onchange="updateFileName(this,'embed-filename')">
           <div class="upload-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="3"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
           </div>
-          <p id="upload-text"><span>Choose file</span> or drag & drop</p>
+          <p id="embed-filename"><span>Pilih file</span> atau drag & drop</p>
         </label>
       </div>
- 
-      <div class="field">
-        <label class="field-label">Secret message</label>
-        <textarea name="message" placeholder="Type your hidden message..."></textarea>
+
+      <button class="btn btn-purple" id="btn-embed" onclick="doEmbed()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span id="emb-btn-text">EMBED KE GAMBAR (LSB)</span>
+        <div class="spinner" id="emb-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:#fff"></div>
+      </button>
+
+      <!-- Embed result -->
+      <div class="result-box" id="embed-result">
+        <div class="result-label">✓ EMBED BERHASIL</div>
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-val" id="psnr-val">—</div>
+            <div class="metric-name">PSNR (dB)</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="ssim-val">—</div>
+            <div class="metric-name">SSIM</div>
+          </div>
+        </div>
+        <a class="btn-download" id="download-btn" href="/download" download="stego.png">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          DOWNLOAD STEGO IMAGE
+        </a>
       </div>
- 
-      <div class="field">
-        <label class="field-label">Key</label>
-        <input type="text" name="key" placeholder="Enter passphrase" required>
-      </div>
- 
-      <div class="btn-row">
-        <button type="submit" name="mode" value="encode" class="btn btn-encode">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
-          </svg>
-          Encode
-        </button>
-        <button type="submit" name="mode" value="decode" class="btn btn-decode">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          Decode
-        </button>
-      </div>
- 
-    </form>
- 
-    <div class="result">
-      <svg class="result-icon" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 16v-4m0-4h.01"/>
-      </svg>
-      <div>
-        <div class="result-lbl">Output</div>
-        <div class="result-val">{{ result }}</div>
+
+      <div class="result-box error" id="embed-error">
+        <div class="result-label">✗ ERROR</div>
+        <div class="result-val" id="embed-error-val"></div>
       </div>
     </div>
- 
+
   </div>
- 
- 
-  <script>
-    document.getElementById('image-input').addEventListener('change', function() {
-      var name = this.files[0] ? this.files[0].name : null;
-      var el = document.getElementById('upload-text');
-      if (name) {
-        el.innerHTML = '<span>' + name + '</span>';
+
+  <!-- ══════════════ DECODE PANEL ══════════════ -->
+  <div class="panel" id="panel-decode">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="step-tag s3">DECODE</span>
+        <span class="card-title">Ekstrak & Dekripsi Pesan</span>
+      </div>
+
+      <div class="field">
+        <label>Upload Stego Image (PNG)</label>
+        <label class="upload-zone">
+          <input type="file" id="decode-image" accept="image/png,image/jpeg" onchange="updateFileName(this,'decode-filename')">
+          <div class="upload-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6b6b" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          </div>
+          <p id="decode-filename"><span>Pilih stego image</span> atau drag & drop</p>
+        </label>
+      </div>
+
+      <div class="field">
+        <label>Kunci Dekripsi</label>
+        <input type="text" id="dec-key" placeholder="Masukkan kunci yang sama...">
+      </div>
+
+      <button class="btn btn-red" id="btn-decode" onclick="doDecode()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span id="dec-btn-text">EKSTRAK & DEKRIPSI</span>
+        <div class="spinner" id="dec-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:#fff"></div>
+      </button>
+
+      <div class="decode-result" id="decode-result">
+        <div class="msg-revealed">
+          <div class="rev-label">✓ Pesan Ditemukan</div>
+          <div class="rev-val" id="dec-message-val"></div>
+        </div>
+        <div class="msg-cipher">
+          <div class="cip-label">Ciphertext yang diekstrak</div>
+          <div class="cip-val" id="dec-cipher-val"></div>
+        </div>
+      </div>
+
+      <div class="decode-result" id="decode-error">
+        <div class="error-msg">
+          <div class="err-label">✗ Gagal</div>
+          <div class="err-val" id="dec-error-val"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  let currentCipher = '';
+  let currentKey    = '';
+
+  // ── Tab switch
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+
+  // ── File name display
+  function updateFileName(input, elId) {
+    const el = document.getElementById(elId);
+    if (input.files[0]) {
+      el.innerHTML = '<span>' + input.files[0].name + '</span>';
+    }
+  }
+
+  // ── STEP 1: Encrypt
+  async function doEncrypt() {
+    const message = document.getElementById('enc-message').value.trim();
+    const key     = document.getElementById('enc-key').value.trim();
+    if (!message || !key) { alert('Pesan dan kunci harus diisi!'); return; }
+
+    setLoading('encrypt', true);
+
+    const fd = new FormData();
+    fd.append('message', message);
+    fd.append('key', key);
+
+    try {
+      const res  = await fetch('/encrypt', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.success) {
+        currentCipher = data.cipher;
+        currentKey    = key;
+
+        // Show cipher result
+        document.getElementById('cipher-text-val').textContent = data.cipher;
+        document.getElementById('cipher-display').classList.add('show');
+
+        // Unlock step 2
+        const card2 = document.getElementById('card-step2');
+        card2.style.opacity       = '1';
+        card2.style.pointerEvents = 'auto';
+        card2.classList.add('highlight');
+
+        // Update stepper
+        document.getElementById('step1-item').classList.remove('active');
+        document.getElementById('step1-item').classList.add('done');
+        document.getElementById('step2-item').classList.add('active');
+
+        // Scroll to step 2
+        setTimeout(() => card2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
       } else {
-        el.innerHTML = '<span>Choose file</span> or drag & drop';
+        alert(data.error || 'Enkripsi gagal.');
       }
-    });
-  </script>
+    } catch(e) {
+      alert('Server error: ' + e.message);
+    }
+
+    setLoading('encrypt', false);
+  }
+
+  // ── STEP 2: Embed
+  async function doEmbed() {
+    const imageFile = document.getElementById('embed-image').files[0];
+    if (!imageFile)     { alert('Pilih gambar terlebih dahulu!'); return; }
+    if (!currentCipher) { alert('Lakukan enkripsi dulu!'); return; }
+
+    setLoading('embed', true);
+    document.getElementById('embed-result').classList.remove('show');
+    document.getElementById('embed-error').classList.remove('show');
+
+    const fd = new FormData();
+    fd.append('cipher', currentCipher);
+    fd.append('key', currentKey);
+    fd.append('image', imageFile);
+
+    try {
+      const res  = await fetch('/embed', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('psnr-val').textContent = data.psnr;
+        document.getElementById('ssim-val').textContent = data.ssim;
+        document.getElementById('embed-result').classList.add('show');
+        document.getElementById('download-btn').classList.add('show');
+
+        // Update stepper
+        document.getElementById('step2-item').classList.remove('active');
+        document.getElementById('step2-item').classList.add('done');
+        document.getElementById('step3-item').classList.add('done');
+      } else {
+        document.getElementById('embed-error-val').textContent = data.error;
+        document.getElementById('embed-error').classList.add('show');
+      }
+    } catch(e) {
+      alert('Server error: ' + e.message);
+    }
+
+    setLoading('embed', false);
+  }
+
+  // ── Decode
+  async function doDecode() {
+    const imageFile = document.getElementById('decode-image').files[0];
+    const key       = document.getElementById('dec-key').value.trim();
+    if (!imageFile) { alert('Pilih stego image!'); return; }
+    if (!key)       { alert('Masukkan kunci!'); return; }
+
+    setLoading('decode', true);
+    document.getElementById('decode-result').classList.remove('show');
+    document.getElementById('decode-error').classList.remove('show');
+
+    const fd = new FormData();
+    fd.append('image', imageFile);
+    fd.append('key', key);
+
+    try {
+      const res  = await fetch('/decode', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById('dec-message-val').textContent = data.message;
+        document.getElementById('dec-cipher-val').textContent  = data.cipher;
+        document.getElementById('decode-result').classList.add('show');
+      } else {
+        document.getElementById('dec-error-val').textContent = data.error;
+        document.getElementById('decode-error').classList.add('show');
+      }
+    } catch(e) {
+      alert('Server error: ' + e.message);
+    }
+
+    setLoading('decode', false);
+  }
+
+  // ── Loading states
+  function setLoading(type, loading) {
+    const map = {
+      encrypt: { btn: 'btn-encrypt', text: 'enc-btn-text', spinner: 'enc-spinner', label: 'ENKRIPSI PESAN' },
+      embed:   { btn: 'btn-embed',   text: 'emb-btn-text', spinner: 'emb-spinner', label: 'EMBED KE GAMBAR (LSB)' },
+      decode:  { btn: 'btn-decode',  text: 'dec-btn-text', spinner: 'dec-spinner', label: 'EKSTRAK & DEKRIPSI' }
+    };
+    const m = map[type];
+    document.getElementById(m.btn).disabled              = loading;
+    document.getElementById(m.text).textContent          = loading ? 'MEMPROSES...' : m.label;
+    document.getElementById(m.spinner).style.display     = loading ? 'block' : 'none';
+  }
+</script>
 </body>
 </html>

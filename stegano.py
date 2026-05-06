@@ -25,7 +25,7 @@ def bin_to_text(binary):
     return text
 
 
-# 🔐 Tambahkan header + hash
+#  Tambahkan header + hash
 def prepare_message(message):
     hash_val = hashlib.sha256(message.encode()).hexdigest()[:8]
     return HEADER + hash_val + ":" + message
@@ -55,7 +55,7 @@ def embed(img_path, message):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     edge = cv2.Canny(gray, 100, 200)
 
-    # 🔐 prepare message
+    # prepare message
     message = prepare_message(message)
 
     binary = text_to_bin(message)
@@ -91,7 +91,7 @@ def extract(img_path):
                     if binary[-8:] == END:
                         raw_text = bin_to_text(binary)
 
-                        # 🔐 VALIDASI
+                        # VALIDASI
                         valid = verify_message(raw_text)
 
                         if valid is None:
