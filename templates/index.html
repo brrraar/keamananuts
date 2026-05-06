@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CryptoStego — Hybrid Kriptografi & Steganografi</title>
+  <title>Kriptografi & Steganografi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -45,7 +45,7 @@
     }
 
     /* Glow blob */
-    body::after {
+    /* body::after {
       content: '';
       position: fixed;
       top: -20%;
@@ -56,7 +56,7 @@
       background: radial-gradient(ellipse, rgba(0,229,255,0.06) 0%, transparent 70%);
       pointer-events: none;
       z-index: 0;
-    }
+    } */
 
     .wrapper {
       max-width: 680px;
@@ -79,8 +79,8 @@
       margin-bottom: 1rem;
     }
 
-    .logo-badge {
-      font-family: 'Space Mono', monospace;
+    /* .logo-badge {
+      font-family: 'Poppins', sans-serif;
       font-size: 10px;
       color: var(--accent);
       border: 1px solid rgba(0,229,255,0.3);
@@ -88,14 +88,14 @@
       padding: 3px 8px;
       letter-spacing: 0.12em;
       background: rgba(0,229,255,0.06);
-    }
+    } */
 
     header h1 {
       font-size: clamp(2rem, 6vw, 3.2rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1.1;
-      background: linear-gradient(135deg, #e8e8f0 30%, var(--accent) 100%);
+      background: var(--accent);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -105,7 +105,7 @@
       margin-top: 0.75rem;
       font-size: 14px;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       letter-spacing: 0.02em;
     }
 
@@ -126,7 +126,7 @@
       border: none;
       background: transparent;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 12px;
       cursor: pointer;
       border-radius: 9px;
@@ -185,7 +185,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 13px;
       color: var(--muted);
       transition: all 0.3s;
@@ -212,7 +212,7 @@
       color: var(--muted);
       text-align: center;
       letter-spacing: 0.06em;
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       text-transform: uppercase;
     }
 
@@ -241,7 +241,7 @@
     }
 
     .step-tag {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 10px;
       padding: 3px 9px;
       border-radius: 4px;
@@ -264,7 +264,7 @@
 
     .field label {
       display: block;
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 10px;
       color: var(--muted);
       letter-spacing: 0.1em;
@@ -279,7 +279,7 @@
       border-radius: 10px;
       padding: 11px 14px;
       color: var(--text);
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 13px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
@@ -333,7 +333,7 @@
     }
 
     .upload-zone p {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 12px;
       color: var(--muted);
     }
@@ -346,7 +346,7 @@
       padding: 13px;
       border: none;
       border-radius: 10px;
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
@@ -412,7 +412,7 @@
     }
 
     .result-label {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 9px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -424,7 +424,7 @@
     .result-box.info .result-label    { color: var(--accent); }
 
     .result-val {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 12px;
       line-height: 1.7;
       word-break: break-all;
@@ -444,7 +444,7 @@
     .cipher-display.show { display: block; }
 
     .cipher-display .cipher-label {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 9px;
       color: var(--accent);
       letter-spacing: 0.12em;
@@ -453,7 +453,7 @@
     }
 
     .cipher-text {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 11px;
       color: #90e0ef;
       word-break: break-all;
@@ -474,7 +474,7 @@
       margin: 1rem 0;
       gap: 10px;
       color: var(--muted);
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 10px;
       letter-spacing: 0.08em;
     }
@@ -502,7 +502,7 @@
     }
 
     .metric-val {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 22px;
       font-weight: 700;
       color: var(--accent);
@@ -510,7 +510,7 @@
     }
 
     .metric-name {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 9px;
       color: var(--muted);
       letter-spacing: 0.1em;
@@ -528,7 +528,7 @@
       background: rgba(57,255,20,0.08);
       color: var(--accent3);
       border-radius: 10px;
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 12px;
       cursor: pointer;
       text-align: center;
@@ -572,7 +572,7 @@
     }
 
     .msg-revealed .rev-label {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 9px;
       color: var(--accent3);
       letter-spacing: 0.12em;
@@ -595,7 +595,7 @@
     }
 
     .msg-cipher .cip-label {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 9px;
       color: var(--accent);
       letter-spacing: 0.12em;
@@ -604,7 +604,7 @@
     }
 
     .msg-cipher .cip-val {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 11px;
       color: #90e0ef;
       word-break: break-all;
@@ -618,7 +618,7 @@
     }
 
     .error-msg .err-label {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 9px;
       color: var(--accent2);
       letter-spacing: 0.12em;
@@ -627,7 +627,7 @@
     }
 
     .error-msg .err-val {
-      font-family: 'Space Mono', monospace;
+      font-family: 'Poppins', sans-serif;
       font-size: 12px;
       color: var(--text);
     }
@@ -639,11 +639,7 @@
 
   <!-- Header -->
   <header>
-    <div class="logo-row">
-      <div class="logo-badge">v2.0 // HYBRID</div>
-    </div>
-    <h1>CryptoStego</h1>
-    <p>// enkripsi → sembunyikan → ekstrak</p>
+    <h1>Kriptografi & Steganografi</h1>
   </header>
 
   <!-- Tabs -->
@@ -652,7 +648,7 @@
     <button class="tab-btn" onclick="switchTab('decode')">⟵ DECODE</button>
   </div>
 
-  <!-- ══════════════ ENCODE PANEL ══════════════ -->
+  <!-- ENCODE PANEL -->
   <div class="panel active" id="panel-encode">
 
     <!-- Stepper -->
@@ -674,7 +670,6 @@
     <!-- STEP 1: Enkripsi -->
     <div class="card highlight" id="card-step1">
       <div class="card-header">
-        <span class="step-tag s1">STEP 01</span>
         <span class="card-title">Enkripsi Pesan</span>
       </div>
 
@@ -710,7 +705,6 @@
     <!-- STEP 2: Embed -->
     <div class="card" id="card-step2" style="opacity:0.4; pointer-events:none;">
       <div class="card-header">
-        <span class="step-tag s2">STEP 02</span>
         <span class="card-title">Sembunyikan ke Gambar</span>
       </div>
 
@@ -758,12 +752,11 @@
 
   </div>
 
-  <!-- ══════════════ DECODE PANEL ══════════════ -->
+  <!-- DECODE PANEL -->
   <div class="panel" id="panel-decode">
 
     <div class="card">
       <div class="card-header">
-        <span class="step-tag s3">DECODE</span>
         <span class="card-title">Ekstrak & Dekripsi Pesan</span>
       </div>
 
